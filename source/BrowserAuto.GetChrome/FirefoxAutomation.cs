@@ -15,7 +15,7 @@ namespace BrowserAuto.GetChrome
 
         private static readonly TimeSpan AjaxTimeout = TimeSpan.FromSeconds(2);
         private static readonly TimeSpan RedirectionTimeout = TimeSpan.FromSeconds(10);
-        private static readonly TimeSpan DownloadTimeout = TimeSpan.FromSeconds(20);
+        private static readonly TimeSpan DownloadTimeout = TimeSpan.FromSeconds(60);
 
         private readonly DirectoryInfo downloadDir;
         private readonly IWebDriver driver;
