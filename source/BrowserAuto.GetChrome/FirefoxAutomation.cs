@@ -16,12 +16,12 @@ namespace BrowserAuto.GetChrome
         private const string ChromeCanaryDownloadPage = @"https://www.google.com/chrome/browser/canary.html";
         private const string ChromeThankYouPage = @"https://www.google.com/chrome/browser/thankyou.html";
 
-        private static readonly Query DownloadsGroupQuery = Query.OfControlType(ControlType.Group).ClassName("MozillaWindowClass").Name("Downloads");
+        private static readonly Query DownloadsGroupQuery = Query.OfName("Downloads").ClassName("MozillaWindowClass");
         private static readonly Query RetryButtonQuery = Query.OfControlType(ControlType.Button).Name("Retry");
 
         private static readonly TimeSpan AjaxTimeout = TimeSpan.FromSeconds(2);
         private static readonly TimeSpan RedirectionTimeout = TimeSpan.FromSeconds(10);
-        private static readonly TimeSpan DownloadTimeout = TimeSpan.FromSeconds(120);
+        private static readonly TimeSpan DownloadTimeout = TimeSpan.FromSeconds(20);
 
         private readonly DirectoryInfo downloadDir;
         private readonly IWebDriver driver;
