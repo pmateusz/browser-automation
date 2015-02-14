@@ -46,18 +46,15 @@
     <Reference Include="UIAutomationTypes" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Automation\Query.cs" />
-    <Compile Include="InstallRunner.cs" />
-    <Compile Include="Automation\AutomationExtensions.cs" />
-    <Compile Include="BrowserInstallTool.cs" />
     <Compile Include="Automation\ChromeAutomation.cs" />
-    <Compile Include="ConsoleOptions.cs" />
     <Compile Include="Automation\FirefoxAutomation.cs" />
     <Compile Include="Automation\IAutomation.cs" />
+    <Compile Include="InstallRunner.cs" />
+    <Compile Include="BrowserInstallTool.cs" />
+    <Compile Include="ConsoleOptions.cs" />
     <Compile Include="ProcessLifeSpanMonitor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Waiter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

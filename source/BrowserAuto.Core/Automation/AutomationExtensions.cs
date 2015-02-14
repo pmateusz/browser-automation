@@ -7,9 +7,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Automation;
 
-namespace BrowserAuto.Install.Automation
+namespace BrowserAuto.Core.Automation
 {
-    internal static class AutomationExtensions
+    public static class AutomationExtensions
     {
         private static readonly Dictionary<Type, Action<Condition, StringBuilder>> ConditionToStringStrategy;
         private static readonly Condition WindowCondition;
@@ -43,7 +43,7 @@ namespace BrowserAuto.Install.Automation
             try
             {
                 var rawValue = automationElement.GetCurrentPropertyValue(AutomationElement.NameProperty);
-                
+
                 if (rawValue != null)
                 {
                     return rawValue.ToString();
@@ -57,11 +57,21 @@ namespace BrowserAuto.Install.Automation
             return string.Empty;
         }
 
-        public static async Task<AutomationElement> FirstChild(this AutomationElement automationElement, Query query, CancellationToken token)
+        public static Task<AutomationElement> FirstChild(this AutomationElement automationElement, Query query, CancellationToken token)
+        {
+            return automationElement.First(TreeScope.Children, query, token);
+        }
+
+        public static Task<AutomationElement> FirstDescendant(this AutomationElement automationElement, Query query, CancellationToken token)
+        {
+            return automationElement.First(TreeScope.Descendants, query, token);
+        }
+
+        private static async Task<AutomationElement> First(this AutomationElement automationElement, TreeScope scope, Query query, CancellationToken token)
         {
             try
             {
-                return await Waiter.Start(() => automationElement.FindFirst(TreeScope.Children, query), token);
+                return await Waiter.Start(() => automationElement.FindFirst(scope, query), token);
             }
             catch (OperationCanceledException ex)
             {

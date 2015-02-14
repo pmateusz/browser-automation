@@ -1,4 +1,5 @@
 ﻿using BrowserAuto.Core;
+using BrowserAuto.Core.Automation;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;

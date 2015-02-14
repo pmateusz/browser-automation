@@ -2,9 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BrowserAuto.Install
+namespace BrowserAuto.Core
 {
-    internal sealed class Waiter
+    public sealed class Waiter
     {
         private static readonly TimeSpan IdleTime = TimeSpan.FromSeconds(1);
 

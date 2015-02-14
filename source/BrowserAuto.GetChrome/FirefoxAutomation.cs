@@ -1,10 +1,13 @@
 ﻿using BrowserAuto.Core;
+using BrowserAuto.Core.Automation;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Automation;
 
 namespace BrowserAuto.GetChrome
 {
@@ -13,9 +16,12 @@ namespace BrowserAuto.GetChrome
         private const string ChromeCanaryDownloadPage = @"https://www.google.com/chrome/browser/canary.html";
         private const string ChromeThankYouPage = @"https://www.google.com/chrome/browser/thankyou.html";
 
+        private static readonly Query DownloadsGroupQuery = Query.OfControlType(ControlType.Group).ClassName("MozillaWindowClass").Name("Downloads");
+        private static readonly Query RetryButtonQuery = Query.OfControlType(ControlType.Button).Name("Retry");
+
         private static readonly TimeSpan AjaxTimeout = TimeSpan.FromSeconds(2);
         private static readonly TimeSpan RedirectionTimeout = TimeSpan.FromSeconds(10);
-        private static readonly TimeSpan DownloadTimeout = TimeSpan.FromSeconds(60);
+        private static readonly TimeSpan DownloadTimeout = TimeSpan.FromSeconds(15);
 
         private readonly DirectoryInfo downloadDir;
         private readonly IWebDriver driver;
@@ -50,7 +56,6 @@ namespace BrowserAuto.GetChrome
             this.driver.Url = url;
         }
 
-        /// <exception cref="InvalidOperationException" />
         internal void SelectCanary()
         {
             Log.Verbose("Click button (Download Chrome Canary)");
@@ -59,7 +64,6 @@ namespace BrowserAuto.GetChrome
             canaryBtn.Click();
         }
 
-        /// <exception cref="InvalidOperationException" />
         internal void UploadStatistics(bool value)
         {
             Log.Verbose("{0} checkbox (sending usage statistics and crash reports)", value ? "Select" : "Do not select");
@@ -71,7 +75,6 @@ namespace BrowserAuto.GetChrome
             }
         }
 
-        /// <exception cref="InvalidOperationException" />
         internal void AcceptEula()
         {
             Log.Verbose("Click button (Accept and Install)");
@@ -80,7 +83,6 @@ namespace BrowserAuto.GetChrome
             acceptEulaBtn.Click();
         }
 
-        /// <exception cref="InvalidOperationException" />
         private IWebElement FindAjaxElement(By condition)
         {
             try
@@ -98,15 +100,12 @@ namespace BrowserAuto.GetChrome
         {
             using (var cancelSource = new CancellationTokenSource())
             {
-                var downloadFinishMonitor = new DownloadFinishMonitor(this.downloadDir);
-                var downloadFinishTask = downloadFinishMonitor.Start(cancelSource.Token);
                 cancelSource.CancelAfter(timeout);
 
                 try
                 {
-                    downloadFinishTask.Wait(cancelSource.Token);
-                    var outputFile = downloadFinishTask.Result;
-                    Log.Information("Output file: {0}", outputFile.Name);
+                    var downloadedFile = WaitForDownloadToComplete(cancelSource.Token);
+                    Log.Information("Output file: {0}", downloadedFile.Name);
                 }
                 catch (OperationCanceledException ex)
                 {
@@ -114,6 +113,27 @@ namespace BrowserAuto.GetChrome
                     throw new InvalidOperationException(msg, ex);
                 }
             }
+        }
+
+        private FileInfo WaitForDownloadToComplete(CancellationToken token)
+        {
+            var downloadFinishMonitor = new DownloadFinishMonitor(this.downloadDir);
+            var downloadFinishTask = downloadFinishMonitor.Start(token);
+
+            Task.Factory.StartNew(() => RetryDownloadIfPossible(token), token);
+
+            return downloadFinishTask.Result;
+
+        }
+
+        private void RetryDownloadIfPossible(CancellationToken token)
+        {
+            var downloadGroup = AutomationElement.RootElement.FirstChild(DownloadsGroupQuery, token).Result;
+            var retryButton = downloadGroup.FirstDescendant(RetryButtonQuery, token).Result;
+
+            Log.Verbose("Click button (Retry)");
+
+            retryButton.Click();
         }
 
         /// <exception cref="InvalidOperationException" />
@@ -137,7 +157,7 @@ namespace BrowserAuto.GetChrome
         {
             FirefoxProfile profile = new FirefoxProfile();
             profile.SetPreference("browser.download.dir", downloadDir.FullName);
-            profile.SetPreference("browser.download.folderList", 2); // it must be 2 in order to download successfully in container environment
+            profile.SetPreference("browser.download.folderList", 2);
             profile.SetPreference("browser.helperApps.neverAsk.saveToDisk", "application/x-msdos-program");
             return profile;
         }

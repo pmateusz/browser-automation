@@ -1,4 +1,5 @@
 ﻿using BrowserAuto.Core;
+using BrowserAuto.Core.Automation;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Automation;

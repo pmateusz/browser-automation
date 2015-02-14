@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Windows.Automation;
 
-namespace BrowserAuto.Install.Automation
+namespace BrowserAuto.Core.Automation
 {
-    internal sealed class Query
+    public sealed class Query
     {
         private readonly List<Condition> conditions;
 
