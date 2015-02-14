@@ -1,0 +1,21 @@
+# Put Firefox Nightly in a clean container
+
+using clean,wget,7-zip
+
+workdir c:\
+
+batch cmd
+	mkdir c:\Workspace & cd c:\Workspace
+	set DOWNLOAD_URL="http://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/latest-mozilla-central/firefox-38.0a1.en-US.win32.zip"
+	wget -O firefox-win32.zip --no-check-certificate --no-verbose "%DOWNLOAD_URL%"
+	7z x firefox-win32.zip -y >nul
+	mkdir c:\FirefoxNightly
+	robocopy firefox c:\FirefoxNightly *.* /e /move >nul
+	cd c:\
+	rmdir c:\Workspace /s /q
+	rmdir c:\wget /s /q
+	
+meta title="Firefox Nightly"
+meta website="%DOWNLOAD_URL%"
+meta version="%DATE%"
+startup file ("c:\FirefoxNightly\firefox.exe")
