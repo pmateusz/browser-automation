@@ -21,7 +21,7 @@ namespace BrowserAuto.GetChrome
 
         private static readonly TimeSpan AjaxTimeout = TimeSpan.FromSeconds(2);
         private static readonly TimeSpan RedirectionTimeout = TimeSpan.FromSeconds(10);
-        private static readonly TimeSpan DownloadTimeout = TimeSpan.FromSeconds(15);
+        private static readonly TimeSpan DownloadTimeout = TimeSpan.FromSeconds(120);
 
         private readonly DirectoryInfo downloadDir;
         private readonly IWebDriver driver;
@@ -121,6 +121,8 @@ namespace BrowserAuto.GetChrome
             var downloadFinishTask = downloadFinishMonitor.Start(token);
 
             Task.Factory.StartNew(() => RetryDownloadIfPossible(token), token);
+
+            downloadFinishTask.Wait(token);
 
             return downloadFinishTask.Result;
 
