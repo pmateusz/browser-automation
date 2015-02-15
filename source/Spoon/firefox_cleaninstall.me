@@ -1,0 +1,33 @@
+# Install Firefox Nightly in a clean container
+
+using clean,git,nuget,dotnet,msbuildtools,wget
+
+batch cmd
+	mkdir Workspace & cd Workspace
+
+workdir c:\Workspace
+
+batch cmd
+	set DOWNLOAD_URL="https://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/latest-trunk/firefox-38.0a1.en-US.win32.installer.exe"
+	mkdir Tools & cd Tools
+	git clone https://github.com/pmateusz/browser-automation --quiet
+	cd "browser-automation/source/C#"
+	nuget restore -verbosity quiet
+	msbuild /property:Configuration=Release /verbosity:minimal
+	cd c:\Workspace\Tools
+	robocopy browser-automation\target\Release . * /move >nul
+	mkdir c:\Workspace\Downloads
+	wget -O c:\Workspace\Downloads\firefox-nightly.exe --no-check-certificate --no-verbose "%DOWNLOAD_URL%"
+	
+cmd Tools\InstallBrowser.exe -d -i Downloads\firefox-nightly.exe
+
+workdir c:\
+batch cmd
+	rmdir c:\Workspace /s /q
+	rmdir c:\Nuget /s /q
+	rmdir c:\wget /s /q
+
+meta title="Firefox Nightly"
+meta version="%DATE%"
+meta website="%DOWNLOAD_URL%"
+startup file ("C:\Program Files (x86)\Nightly\firefox.exe")

@@ -1,0 +1,36 @@
+# Install Chrome Canary in a clean container
+
+using clean,firefox,git,nuget,dotnet,msbuildtools
+
+cmd mkdir c:\Workspace
+workdir c:\Workspace
+
+batch cmd
+	mkdir Tools & cd Tools
+	git clone https://github.com/pmateusz/browser-automation --quiet
+	cd "browser-automation/source/C#"
+	nuget restore -verbosity quiet
+	msbuild /property:Configuration=Release /verbosity:minimal
+	cd c:\Workspace\Tools
+	robocopy browser-automation\target\Release . * /move >nul
+	rmdir browser-automation /s /q
+
+workdir c:\
+	
+batch cmd
+	mkdir c:\Workspace\Downloads
+	c:\Workspace\Tools\GetChrome.exe -d -p x86 -o c:\Workspace\Downloads
+
+cmd c:\Workspace\Downloads\ChromeSetup.exe
+
+batch cmd
+	mkdir c:\ChromeCanary
+	robocopy "%USERPROFILE%\AppData\Local\Google\Chrome SxS\Application" c:\ChromeCanary *.* /e /move >nul
+	rmdir C:\Workspace /s /q
+	rmdir C:\Nuget /s /q
+	rmdir C:\wget /s /q
+
+meta title="Chrome Canary"
+meta version="%DATE%"
+meta website="https://www.google.com/chrome/browser/canary.html"
+startup file ("C:\ChromeCanary\chrome.exe")
