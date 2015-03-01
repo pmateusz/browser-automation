@@ -1,6 +1,5 @@
 import argparse
 import re
-import requests
 import ftplib
 import time
 import datetime
