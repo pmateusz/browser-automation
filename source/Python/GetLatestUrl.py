@@ -4,6 +4,7 @@ import ftplib
 import time
 import datetime
 import urllib
+import urllib.parse
 
 def parse_args():
 	parser = argparse.ArgumentParser()
