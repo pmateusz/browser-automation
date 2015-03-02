@@ -60,5 +60,6 @@ if __name__ == '__main__':
 	regex = re.compile(args.regex, re.IGNORECASE)
 	ftp = FTP()
 	latest_filename = ftp.get_latest(args.url, regex)
-	latest_url = urllib.parse.urljoin(args.url, latest_filename)
+	# latest_url = urllib.parse.urljoin(args.url, latest_filename) - does not work in container
+	latest_url = '{0}{1}{2}'.format(args.url, '' if args.url.endswith('/') else '/', latest_filename)
 	print(latest_url)
