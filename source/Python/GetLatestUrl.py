@@ -13,7 +13,7 @@ def parse_args():
 	return parser.parse_args()
 
 class FTP:
-	LIST_LINE_PATTERN = re.compile(r'(?P<datetime>\w{3}\s+\d{2}(\s+(?P<time>\d{2}:\d{2}))?(\s+(?P<year>\d{4}))?)\s+(?P<filename>[\S]+)$')
+	LIST_LINE_PATTERN = re.compile(r'\d+\s+(?P<datetime>\w{3}\s+\d{2}(\s+(?P<time>\d{2}:\d{2}))?(\s+(?P<year>\d{4}))?)\s+(?P<filename>(\S+)|(\S.*\S))$')
 	URL_PATTERN = re.compile(r'^(?P<scheme>ftp://)?(?P<domain>[\w\.]+)\/?(?P<path>[\/\w\.-]+)?', re.IGNORECASE)
 	
 	def _parse_datetime(self, match):
